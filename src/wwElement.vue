@@ -1,45 +1,27 @@
 <template>
-  <div 
-    :class="alertClasses"
-    role="alert"
-  >
+  <div :class="alertClasses" role="alert">
     <component
       v-if="content.icon"
       :is="content.icon"
-      class="absolute left-4 top-4 h-4 w-4 text-foreground"
+      class="alert-icon"
     />
     
-    <div :class="contentWrapperClasses">
-      <h5 v-if="content.title" :class="titleClasses">
+    <div class="alert-content">
+      <h4 v-if="content.title" class="alert-title">
         {{ content.title }}
-      </h5>
+      </h4>
       
-      <div v-if="content.description" :class="descriptionClasses">
+      <div v-if="content.description" class="alert-description">
         {{ content.description }}
       </div>
       
-      <div v-if="content.htmlContent" v-html="content.htmlContent" />
-      
-      <slot />
+      <slot v-else />
     </div>
-    
-    <button
-      v-if="content.dismissible"
-      @click="handleDismiss"
-      :class="dismissButtonClasses"
-      type="button"
-      aria-label="Dismiss"
-    >
-      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M18 6L6 18M6 6l12 12"/>
-      </svg>
-    </button>
   </div>
 </template>
 
 <script>
 import { computed } from 'vue'
-import { cn } from './cn.js'
 
 export default {
   name: 'WewebAlert',
@@ -48,80 +30,98 @@ export default {
       type: Object,
       required: true,
       default: () => ({
-        variant: 'default',
         title: '',
-        description: '',
-        htmlContent: '',
+        description: 'Alert description',
+        variant: 'default',
         icon: null,
-        dismissible: false,
         customClasses: ''
       })
     }
   },
-  emits: ['dismiss'],
-  setup(props, { emit }) {
-    const alertVariants = {
-      base: "relative w-full rounded-lg border p-4",
-      variants: {
-        variant: {
-          default: "bg-background text-foreground",
-          destructive: "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
-          success: "border-green-500/50 text-green-700 dark:border-green-500 [&>svg]:text-green-600",
-          warning: "border-yellow-500/50 text-yellow-700 dark:border-yellow-500 [&>svg]:text-yellow-600",
-          info: "border-blue-500/50 text-blue-700 dark:border-blue-500 [&>svg]:text-blue-600"
-        }
-      }
-    }
-
-    const alertClasses = computed(() => cn(
-      alertVariants.base,
-      alertVariants.variants.variant[props.content.variant] || alertVariants.variants.variant.default,
-      {
-        "pr-10": props.content.dismissible,
-        "[&>svg~*]:pl-7": props.content.icon,
-        "[&>svg+div]:translate-y-[-3px]": props.content.icon
-      },
-      props.content.customClasses
-    ))
-
-    const contentWrapperClasses = computed(() => cn(
-      props.content.icon ? "pl-7" : ""
-    ))
-
-    const titleClasses = computed(() => cn(
-      "mb-1 font-medium leading-none tracking-tight"
-    ))
-
-    const descriptionClasses = computed(() => cn(
-      "text-sm [&_p]:leading-relaxed"
-    ))
-
-    const dismissButtonClasses = computed(() => cn(
-      "absolute right-2 top-2 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-    ))
-
-    const handleDismiss = (event) => {
-      emit('dismiss', event)
+  setup(props) {
+    const alertClasses = computed(() => {
+      const variant = props.content.variant || 'default'
       
-      // Execute Weweb workflow if defined
-      if (props.content.dismissWorkflowId && typeof wwLib !== 'undefined') {
-        wwLib.executeWorkflow(props.content.dismissWorkflowId)
+      const classes = [
+        'alert-base',
+        `alert-variant-${variant}`
+      ]
+      
+      if (props.content.customClasses) {
+        classes.push(props.content.customClasses)
       }
-    }
+      
+      return classes.join(' ')
+    })
 
     return {
-      alertClasses,
-      contentWrapperClasses,
-      titleClasses,
-      descriptionClasses,
-      dismissButtonClasses,
-      handleDismiss
+      alertClasses
     }
   }
 }
 </script>
 
-<style>
-/* Import global shadcn/ui styles */
-@import './globals.css';
-</style> 
+<style scoped>
+/* Variables CSS Shadcn/UI */
+:root {
+  --border: hsl(214.3, 31.8%, 91.4%);
+  --foreground: hsl(222.2, 84%, 4.9%);
+  --primary: hsl(222.2, 47.4%, 11.2%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --warning: hsl(38, 92%, 50%);
+  --warning-foreground: hsl(48, 96%, 89%);
+}
+
+/* Alert base styles */
+.alert-base {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.alert-variant-default {
+  background-color: hsl(0, 0%, 100%);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.alert-variant-destructive {
+  background-color: hsl(0, 84.2%, 97%);
+  border-color: var(--destructive);
+  color: var(--destructive);
+}
+
+.alert-variant-warning {
+  background-color: hsl(48, 96%, 95%);
+  border-color: var(--warning);
+  color: hsl(25, 95%, 30%);
+}
+
+.alert-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-title {
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  font-size: 14px;
+}
+
+.alert-description {
+  font-size: 14px;
+  opacity: 0.8;
+  margin: 0;
+}
+</style>
