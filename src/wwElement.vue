@@ -1,18 +1,12 @@
 <template>
   <div :class="alertClasses" role="alert">
-    <component
-      v-if="content.icon"
-      :is="content.icon"
-      class="alert-icon"
-    />
-    
     <div class="alert-content">
-      <h4 v-if="content.title" class="alert-title">
-        {{ content.title }}
+      <h4 v-if="title" class="alert-title">
+        {{ title }}
       </h4>
       
-      <div v-if="content.description" class="alert-description">
-        {{ content.description }}
+      <div v-if="description" class="alert-description">
+        {{ description }}
       </div>
       
       <slot v-else />
@@ -26,29 +20,34 @@ import { computed } from 'vue'
 export default {
   name: 'WewebAlert',
   props: {
-    content: {
-      type: Object,
-      required: true,
-      default: () => ({
-        title: '',
-        description: 'Alert description',
-        variant: 'default',
-        icon: null,
-        customClasses: ''
-      })
+    title: {
+      type: String,
+      default: ''
+    },
+    description: {
+      type: String,
+      default: 'Alert description'
+    },
+    variant: {
+      type: String,
+      default: 'default'
+    },
+    customClasses: {
+      type: String,
+      default: ''
     }
   },
   setup(props) {
     const alertClasses = computed(() => {
-      const variant = props.content.variant || 'default'
+      const variant = props.variant || 'default'
       
       const classes = [
         'alert-base',
         `alert-variant-${variant}`
       ]
       
-      if (props.content.customClasses) {
-        classes.push(props.content.customClasses)
+      if (props.customClasses) {
+        classes.push(props.customClasses)
       }
       
       return classes.join(' ')
