@@ -1,34 +1,18 @@
 export default {
     editor: {
-        label: 'Shadcn Alert',
+        label: 'alert',
         icon: 'exclamation-triangle',
     },
+    triggerEvents: [
+        { name: 'click', label: 'On Click', event: { value: '' }, default: true },
+    ],
     properties: {
-        title: {
-            label: 'Alert title',
-            type: 'Text',
+        content: {
+            label: 'Content',
+            type: 'Object',
             section: 'settings',
-            defaultValue: 'Alert',
             bindable: true,
-        },
-        description: {
-            label: 'Description',
-            type: 'Text',
-            section: 'settings',
-            defaultValue: 'Alert description',
-            bindable: true,
-        },
-        variant: {
-            label: 'Variant',
-            type: 'TextSelect',
-            section: 'settings',
-            options: {
-                options: [
-                    { value: 'default', label: 'Default' },
-                    { value: 'destructive', label: 'Destructive' }
-                ]
-            },
-            defaultValue: 'default'
+            defaultValue: {}
         }
     }
 };
