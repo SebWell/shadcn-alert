@@ -1,26 +1,22 @@
 {
-  "name": "shadcn-alert",
-  "version": "1.0.0",
-  "description": "Shadcn/UI alert component for Weweb",
-  "main": "src/alert.vue",
-  "weweb": {
-    "componentPath": "./src/alert.vue"
-  },
-  "scripts": {
-    "serve": "webpack serve --mode development",
-    "build": "webpack --mode production"
-  },
-  "keywords": [
-    "weweb",
-    "shadcn",
-    "ui",
-    "alert",
-    "vue",
-    "component"
-  ],
-  "author": "Shadcn/UI for Weweb",
-  "license": "MIT",
-  "dependencies": {
-    "vue": "^3.3.4"
-  }
+    "name": "shadcn-alert",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/SebWell/shadcn-alert"
+    },
+    "version": "1.0.0",
+    "license": "MIT",
+    "scripts": {
+        "build": "weweb build",
+        "serve": "weweb serve",
+        "create-config": "weweb config"
+    },
+    "devDependencies": {
+        "@vue/eslint-config-prettier": "^6.0.0",
+        "@weweb/cli": "latest",
+        "eslint": "^7.7.0",
+        "eslint-plugin-prettier": "^3.1.4",
+        "eslint-plugin-vue": "7.0.0-beta.4",
+        "prettier": "^2.1.2"
+    }
 }
