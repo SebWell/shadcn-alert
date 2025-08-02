@@ -1,5 +1,5 @@
 <template>
-  <div :class="alertClasses" role="alert">
+  <div class="ww-alert" role="alert">
     <div class="alert-content">
       <h4 v-if="content.title" class="alert-title">
         {{ content.title }}
@@ -8,115 +8,140 @@
       <div v-if="content.description" class="alert-description">
         {{ content.description }}
       </div>
-      
-      <slot v-else />
     </div>
   </div>
 </template>
 
 <script>
-import { computed } from 'vue'
-
 export default {
   name: 'ShadcnAlert',
   props: {
-    content: {
-      type: Object,
-      required: true,
-      default: () => ({
-        title: 'Alert Title',
-        description: 'This is an alert description that provides additional context.',
-        variant: 'default',
-        customClasses: ''
-      })
-    },
-    wwEditorState: { type: Object, required: true }
+    content: { type: Object, required: true },
+    wwElementState: { type: Object, required: true },
+    /* wwEditor:start */
+    wwEditorState: { type: Object, required: true },
+    /* wwEditor:end */
   },
-  emits: ["trigger-event"],
-  setup(props, { emit }) {
-    const alertClasses = computed(() => {
-      const variant = props.content.variant || 'default'
-      
-      const classes = [
-        'alert-base',
-        `alert-variant-${variant}`
-      ]
-      
-      if (props.content.customClasses) {
-        classes.push(props.content.customClasses)
-      }
-      
-      return classes.join(' ')
-    })
-
-    return {
-      alertClasses
+  emits: ['trigger-event'],
+  computed: {
+    alertClasses() {
+      const variant = this.content.variant || 'default'
+      return `ww-alert alert-${variant}`
+    }
+  },
+  methods: {
+    handleClick(event) {
+      this.$emit('trigger-event', {
+        name: 'click',
+        event: { 
+          domEvent: event,
+          variant: this.content.variant,
+          title: this.content.title
+        }
+      })
     }
   }
 }
 </script>
 
-<style scoped>
-/* Variables CSS Shadcn/UI */
+<style>
+/* ===== SHADCN UI CSS VARIABLES ===== */
+
+/* Shadcn UI Variables */
 :root {
-  --border: hsl(214.3, 31.8%, 91.4%);
-  --foreground: hsl(222.2, 84%, 4.9%);
-  --primary: hsl(222.2, 47.4%, 11.2%);
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --warning: hsl(38, 92%, 50%);
-  --warning-foreground: hsl(48, 96%, 89%);
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+  --radius: 0.5rem;
 }
 
-/* Alert base styles */
-.alert-base {
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+}
+
+/* ===== ALERT STYLES - EXACTEMENT COMME SHADCN UI ===== */
+
+.ww-alert {
+  position: relative;
+  width: 100%;
+  border-radius: calc(var(--radius));
+  border: 1px solid hsl(var(--border));
+  padding: 1rem;
+  font-family: inherit;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+}
+
+.ww-alert.alert-default {
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.ww-alert.alert-destructive {
+  border-color: hsl(var(--destructive) / 0.5);
+  color: hsl(var(--destructive));
+  background-color: hsl(var(--destructive) / 0.1);
+}
+
+.ww-alert.alert-warning {
+  border-color: hsl(38 92% 50% / 0.5);
+  color: hsl(25 95% 39%);
+  background-color: hsl(48 96% 53% / 0.1);
+}
+
+.ww-alert .alert-content {
   display: flex;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 1.5;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.alert-variant-default {
-  background-color: hsl(0, 0%, 100%);
-  border-color: var(--border);
-  color: var(--foreground);
-}
-
-.alert-variant-destructive {
-  background-color: hsl(0, 84.2%, 97%);
-  border-color: var(--destructive);
-  color: var(--destructive);
-}
-
-.alert-variant-warning {
-  background-color: hsl(48, 96%, 95%);
-  border-color: var(--warning);
-  color: hsl(25, 95%, 30%);
-}
-
-.alert-icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.alert-content {
-  flex: 1;
-}
-
-.alert-title {
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  font-size: 14px;
-}
-
-.alert-description {
-  font-size: 14px;
-  opacity: 0.8;
+.ww-alert .alert-title {
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  line-height: 1.25;
+  font-size: 0.875rem;
   margin: 0;
+  color: inherit;
+}
+
+.ww-alert .alert-description {
+  font-size: 0.875rem;
+  line-height: 1.25;
+  margin: 0;
+  opacity: 0.8;
+  color: inherit;
+}
+
+/* Responsive et accessibilité */
+.ww-alert:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
 }
 </style>
